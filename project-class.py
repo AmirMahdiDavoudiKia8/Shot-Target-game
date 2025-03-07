@@ -3,8 +3,8 @@ import random
 
 class Target:
     def __init__(self):
-        self.x = random.randit(0, 600)
-        self.y = random.randit(0, 600)
+        self.x = random.randit(0, 88) * 10
+        self.y = random.randit(0, 58) * 10
         self.score = 10
     
     def show(self, screen):
@@ -18,8 +18,8 @@ class Item:
             self.score =0 
             self.ammo_bonus= 5
         def show(self, screen):
-            pygame.draw.rect(screen, (50, 150, 0), (self.x -15, self.y -5, 30, 10))
-            pygame.draw.line(screen, (50, 200, 0), (self.x +15, self.y), (self.x +20, self.y), 3)
+            pygame.draw.rect(screen, (50, 150, 0), (self.x -20, self.y -10, 30, 10))
+            pygame.draw.line(screen, (50, 200, 0), (self.x +20, self.y), (self.x +20, self.y), 7)
             
 
     class SlowEnemy(Target):
@@ -29,10 +29,10 @@ class Item:
             self.slow = 5
         def show(self, screen):
             pygame.draw.polygon(screen, (200, 0, 200), [
-                (self.x, self.y-15),
-                (self.x +15, self.y),
-                (self.x, self.y-15),
-                (self.x-15 , self.y)
+                (self.x, self.y-20),
+                (self.x +20, self.y),
+                (self.x, self.y-20),
+                (self.x-20 , self.y)
             ])
         
     class ExtraTime(Target):
