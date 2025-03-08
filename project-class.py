@@ -1,39 +1,24 @@
-import pygame,sys
-import pygame.event as GAME_EVENTS
-import pygame.locals as GAME_GLOBALS
 import random
-
+import pygame
 
 pygame.init()
-window=pygame.display.set_mode((900, 600))
-window.fill((10, 18, 18))
-pygame.display.set_caption('Shot-Target')
 
-while True:
-    for event in GAME_EVENTS.get():
-        if event.type == GAME_GLOBALS.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    pygame.display.update()
-
-
-class pleyer:
+class Pleyer:
 
     def __init__(self, name, score=0, time=300, Ammo=20):
         self.name = name
         self.score = score
         self.time = time
         self.Ammo = Ammo
-        self.pos_x = random.randiat(1, 90) * 10
-        self.pos_y = random.randiat(1, 60) * 10
+        self.pos_x = random.randint(1, 90) * 10
+        self.pos_y = random.randint(1, 60) * 10
 
     def move_up(self):
         self.pos_y += 10
         if self.pos_y > 600 :
             self.pos_y - 600
 
-    def move_done(self):
+    def move_down(self):
         self.pos_y -= 10
         if self.pos_y < 0 :
             self.pos_y + 600
@@ -52,22 +37,27 @@ class pleyer:
     def shoot(self, player):
         if self.Ammo > 0 :
             self.Ammo -= 1
+            
 
-
-
-    def Hit(self, target):
-        if target.x - 20 < self.pos_x < target.x + 20 and target.y - 20 < self.pos_y < target.y + 20 :
-            target.rest()
+    def hit(self, target):
+        targets = []
+        for i in range(3):
+            targets.append(Target())
+        for t in targets[:]:
+                if target.x - 20 < self.pos_x < target.x + 20 and target.y - 20 < self.pos_y < target.y + 20 :
+                    targets.remove(t) 
+                    targets.append(Target())
+     
 
             
 class Target:
     def __init__(self):
-        self.x = random.randit(0, 88) * 10
-        self.y = random.randit(0, 58) * 10
+        self.x = random.randint(0, 88) * 10
+        self.y = random.randint(0, 58) * 10
         self.score = 10
     
     def show(self, screen):
-        pygame.draw.rect(screen, (255,0,0), (self.x, self.y), 40,40)
+        pygame.draw.rect(screen, (255,0,0), (self.x, self.y ,40,40))
     
     
 class Item:
@@ -88,10 +78,10 @@ class Item:
             self.slow = 5
         def show(self, screen):
             pygame.draw.polygon(screen, (200, 0, 200), [
-                (self.x, self.y-30),
-                (self.x +30, self.y),
-                (self.x, self.y-30),
-                (self.x-30 , self.y)
+                (self.x, self.y-20),
+                (self.x +20, self.y),
+                (self.x, self.y-20),
+                (self.x-20 , self.y)
             ])
         
     class ExtraTime(Target):
@@ -101,6 +91,6 @@ class Item:
             self.score = 0
         
         def show(self, screen):
-            pygame.draw.circle(screen, (0, 45, 225), (self.x, self.y), 30)
+            pygame.draw.circle(screen, (0, 45, 225), (self.x, self.y), 20)
             pygame.draw.line(screen, (self.x, self.y), (self.x+15 , self.y-15), 2)
-            pygame.draw.line(screen, (self.s , self.y), (self.x , self.y+25), 2)
+            pygame.draw.line(screen, (self.x , self.y), (self.x , self.y+25), 2)

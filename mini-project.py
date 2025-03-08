@@ -1,6 +1,11 @@
-import pygame
+import pygame,sys
+import pygame.event as GAME_EVENTS
+import pygame.locals as GAME_GLOBALS
+
+
 pygame.init()
 
+""" 
 screen_width=800
 screen_height=600
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -50,3 +55,16 @@ while run:
 print(f"Player 1: {player1_name}, Player 2: {player2_name}")
 pygame.quit()
 
+ """
+
+window=pygame.display.set_mode((900, 600))
+window.fill((10, 18, 18))
+pygame.display.set_caption('Shot-Target')
+
+while True:
+    for event in GAME_EVENTS.get():
+        if event.type == GAME_GLOBALS.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    pygame.display.update()
