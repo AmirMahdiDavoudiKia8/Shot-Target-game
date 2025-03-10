@@ -34,10 +34,20 @@ class Pleyer:
             self.pos_x += 900
 
 
-    def shoot(self, player, targets):
+    def shoot(self, player, targets, screen):
         if self.Ammo > 0:
             self.Ammo -= 1
+            self.last_shot_pos = (self.pos_x, self.pos_y)
+            self.show_Crosshair(screen)
             self.hit(player, targets)
+
+    def show_Crosshair(self, screen):
+    
+        if self.last_shot_pos:
+            x, y = self.last_shot_pos
+            pygame.draw.rect(screen, (255, 0, 0), (x - 5, y - 5, 10, 10))
+            pygame.draw.circle(screen, (0, 0, 0), (x, y), 3)
+
 
     def hit(self, opponent, targets):
         for t in targets:
