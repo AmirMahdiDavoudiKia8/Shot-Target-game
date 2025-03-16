@@ -8,21 +8,21 @@ pygame.init()
 pygame.mixer.init()
 shoot_sound = pygame.mixer.Sound("shoot.wav")
 
-cap = cv2.VideoCapture("background.mp4")  # اسم فایل ویدیوتون
+cap = cv2.VideoCapture("background.mp4") 
 if not cap.isOpened():
     print("Error: Could not open video.")
     sys.exit()
 
 def get_frame():
     ret, frame = cap.read()
-    if not ret:  # اگه به آخر ویدیو رسید، از اول شروع کن
+    if not ret: 
         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
         ret, frame = cap.read()
-    if ret:  # مطمئن بشیم فریم معتبره
+    if ret:
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = cv2.resize(frame, (GAME_WIDTH, GAME_HEIGHT))
         return pygame.surfarray.make_surface(frame.transpose((1, 0, 2)))
-    return None  # اگه فریم نبود، None برگردون
+    return None
 
 class ScoreSystem:
     def __init__(self):
