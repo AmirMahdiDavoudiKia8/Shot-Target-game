@@ -15,16 +15,18 @@ class Player:
         self.Ammo = Ammo
         self.pos_x = random.randint(1, 90) * 10
         self.pos_y = random.randint(1, 60) * 10
+        self.last_shot_pos = None 
 
     def move_up(self):
-        self.pos_y += 10
-        if self.pos_y > 600 :
-            self.pos_y - 600
+        self.pos_y -= 10
+        if self.pos_y < 80:
+            self.pos_y = 600
 
     def move_down(self):
-        self.pos_y -= 10
-        if self.pos_y < 0 :
-            self.pos_y + 600
+        self.pos_y += 10
+        if self.pos_y > 600:
+            self.pos_y = 80
+
 
     def move_right(self):
         self.pos_x += 10
@@ -53,18 +55,26 @@ class Player:
 
 
     def hit(self, opponent, targets):
-        for t in targets:
+        for t in targets[:]:
             if t.x - 20 < self.pos_x < t.x + 20 and t.y - 20 < self.pos_y < t.y + 20:
+                print(f"Hit target at {t.x}, {t.y}")  # نمایش لاگ برای تست
                 targets.remove(t)
-                targets.append(Target())
+
                 if isinstance(t, ExtraTime):
                     self.time += 10
+                    targets.append(ExtraTime())
+
                 elif isinstance(t, ExtraAmmo):
                     self.Ammo += 5
+                    targets.append(ExtraAmmo())
+
                 elif isinstance(t, lowAmmo):
                     opponent.Ammo -= 2
+                    targets.append(lowAmmo())
+
                 else:
                     self.score += 10
+                    targets.append(Target())
                 return True
                                
             
@@ -103,8 +113,8 @@ class ExtraTime(Target):
         
     def show(self, screen):
         pygame.draw.circle(screen, (0, 45, 225), (self.x, self.y), 20)
-        pygame.draw.line(screen, (self.x, self.y), (self.x+15 , self.y-15), 2)
-        pygame.draw.line(screen, (self.x , self.y), (self.x , self.y+25), 2)
+        pygame.draw.line(screen, WHITE, (self.x, self.y), (self.x+15 , self.y-15), 2)
+        pygame.draw.line(screen, WHITE, (self.x , self.y), (self.x , self.y+25), 2)
 
 
 
@@ -117,7 +127,6 @@ def draw_text(text, pos, font, color=BLACK):
     screen.blit(text_surface, pos)
 
 def show_welcome_screen():
-    screen
     draw_text("welcome to game!", (200, 100), font_l, RED)
     draw_text("Press the key to start the game ...", (350, 200), font_s, 'green')
     pygame.display.flip()
@@ -192,18 +201,85 @@ if not player1_name or not player2_name:
 player1 = Player(player1_name)
 player2 = Player(player2_name)
 
+Target1 = Target()
+Target2 = Target()
+Target3 = Target()
+item1 = ExtraAmmo()
+item2 = ExtraTime()
+item3 = lowAmmo()
+
+Targets = [Target1, Target2, Target3, item1, item2, item3]
+
+num_shoot1 = 0
+num_shoot2 = 0
 
 running = True
 while running:
     screen.fill(GRAY)
     draw_header(player1.name, player1.score, player1.time, player1.Ammo, player2.name, player2.score, player2.time, player2.Ammo)
     pygame.draw.rect(screen, BLACK, (0, HEADER_HEIGHT, GAME_WIDTH, GAME_HEIGHT), 0)
+    for target in Targets:
+        target.show(screen)
+
+    if num_shoot1 > 0:
+        player1.show_Crosshair(screen)
+
+    if num_shoot2 > 0:
+        player2.show_Crosshair(screen)
 
     
     pygame.display.flip()
     
     for event in pygame.event.get():
+        print(event)
         if event.type == pygame.QUIT:
             running = False
 
-pygame.quit()
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_e:
+                player1.shoot(player2, Targets, screen)
+                num_shoot1 += 1
+                for target in Targets:
+                    target.show(screen)
+
+                    pygame.display.flip()
+
+
+            if event.key == pygame.K_w:
+                player1.move_up()
+
+            if event.key == pygame.K_a:
+                player1.move_left()
+
+            if event.key == pygame.K_d:
+                player1.move_right()
+
+            if event.key == pygame.K_s:
+                player1.move_down()
+
+
+            if event.key == pygame.K_KP7:
+                player2.shoot(player1, Targets, screen)
+                num_shoot2 += 1
+                for target in Targets:
+                    target.show(screen)
+
+                    pygame.display.flip()
+
+
+            if event.key == pygame.K_KP8:
+                player2.move_up()
+
+            if event.key == pygame.K_KP4:
+                player2.move_left()
+
+            if event.key == pygame.K_KP6:
+                player2.move_right()
+
+            if event.key == pygame.K_KP5:
+                player2.move_down()
+
+            
+
+
