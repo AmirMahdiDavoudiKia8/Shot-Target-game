@@ -1,11 +1,28 @@
 import random
 import pygame,sys
-from costom import *
+from custom import *
 import math
+import cv2
 
 pygame.init()
 pygame.mixer.init()
 shoot_sound = pygame.mixer.Sound("shoot.wav")
+
+cap = cv2.VideoCapture("background.mp4")  # اسم فایل ویدیوتون
+if not cap.isOpened():
+    print("Error: Could not open video.")
+    sys.exit()
+
+def get_frame():
+    ret, frame = cap.read()
+    if not ret:  # اگه به آخر ویدیو رسید، از اول شروع کن
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        ret, frame = cap.read()
+    if ret:  # مطمئن بشیم فریم معتبره
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = cv2.resize(frame, (GAME_WIDTH, GAME_HEIGHT))
+        return pygame.surfarray.make_surface(frame.transpose((1, 0, 2)))
+    return None  # اگه فریم نبود، None برگردون
 
 class ScoreSystem:
     def __init__(self):
@@ -110,10 +127,9 @@ class Player:
                 return True
         self.score_system.reset_consecutive()
             
-            
 class Target:
     def __init__(self):
-        self.x = random.randint(0, 88) * 10
+        self.x = random.randint(4, 86) * 10
         self.y = random.randint(10, 58) * 10
         self.score = 10
         self.image = pygame.image.load("target.png").convert_alpha()
@@ -195,12 +211,11 @@ def get_player_names():
     player2 = ""
     active_player = 1
     running = True
-    
     while running:
-        screen.fill(BLACK)
-        draw_text("Player One, please enter your name:", (50, 50), font_2, GRAY)
+        screen.blit(get_frame(), (0, 0))
+        draw_text("Player One, please enter your name:", (50, 50), font_2, BLACK)
         draw_text(player1, (50, 100), font, RED)
-        draw_text("Player Two, please enter your name:", (50, 250), font_2, GRAY)
+        draw_text("Player Two, please enter your name:", (50, 250), font_2, BLACK)
         draw_text(player2, (50, 300), font, RED)
         draw_text("Press Enter to confirm ...", (50, 550), font_s, 'green')
         pygame.display.flip()
@@ -258,9 +273,10 @@ num_shoot2 = 0
 
 running = True
 while running:
-    screen.fill(GRAY)
+    screen.blit(get_frame(), (0, 0))
     draw_header(player1.name, player1.score, player1.time, player1.Ammo, player2.name, player2.score, player2.time, player2.Ammo)
     pygame.draw.rect(screen, BLACK, (0, HEADER_HEIGHT, GAME_WIDTH, GAME_HEIGHT), 0)
+   
     for target in Targets:
         target.show(screen)
 
@@ -323,4 +339,6 @@ while running:
             if event.key == pygame.K_KP5:
                 player2.move_down()
 
+cap.release()
+pygame.quit()
             
