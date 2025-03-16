@@ -1,11 +1,38 @@
 import random
 import pygame,sys
 from costom import *
+import math
 
 pygame.init()
+pygame.mixer.init()
+shoot_sound = pygame.mixer.Sound("shoot.wav")
 
-
-
+class ScoreSystem:
+    def __init__(self):
+        self.consecutive_hits = 0
+        
+    def calculate_score(self, player_x, player_y, target_x, target_y):
+        distance = math.sqrt((player_x - target_x) **2 + (player_y - target_y) ** 2)
+        if distance < 100:
+            base_score =1 
+        elif distance <200:
+            base_score= 2
+        elif distance< 300:
+            base_score= 3
+        elif distance< 400:
+            base_score= 4
+        else:
+            base_score= 5 
+        bonus_score =0
+        self.consecutive_hits += 1
+        if self.consecutive_hits >= 2:
+            bonus_score = 3 
+            self.consecutive_hits = 0
+        return base_score+ bonus_score
+    
+    def reset_consecutive(self):
+        self.consecutive_hits = 0
+                     
 class Player:
 
     def __init__(self, name, score=0, time=60, Ammo=20):
@@ -16,6 +43,7 @@ class Player:
         self.pos_x = random.randint(1, 90) * 10
         self.pos_y = random.randint(1, 60) * 10
         self.last_shot_pos = None 
+        self.score_system = ScoreSystem()
 
     def move_up(self):
         self.pos_y -= 10
@@ -43,6 +71,7 @@ class Player:
         if self.Ammo > 0:
             self.Ammo -= 1
             self.last_shot_pos = (self.pos_x, self.pos_y)
+            shoot_sound.play()
             self.show_Crosshair(screen)
             self.hit(player, targets)
 
@@ -56,71 +85,72 @@ class Player:
 
     def hit(self, opponent, targets):
         for t in targets[:]:
-<<<<<<< HEAD
-                if target.x - 20 < self.pos_x < target.x + 20 and target.y - 20 < self.pos_y < target.y + 20 :
-                    targets.remove(t) 
-                    targets.append(Target())
-=======
             if t.x - 20 < self.pos_x < t.x + 20 and t.y - 20 < self.pos_y < t.y + 20:
-                print(f"Hit target at {t.x}, {t.y}")  # نمایش لاگ برای تست
+                print(f"Hit target at {t.x}, {t.y}") 
                 targets.remove(t)
->>>>>>> ea3e7105e17aee6ad6a236e656765cc305dfa528
-
                 if isinstance(t, ExtraTime):
                     self.time += 10
                     targets.append(ExtraTime())
+                    self.score_system.reset_consecutive()
 
                 elif isinstance(t, ExtraAmmo):
                     self.Ammo += 5
                     targets.append(ExtraAmmo())
+                    self.score_system.reset_consecutive()
 
-                elif isinstance(t, lowAmmo):
+                elif isinstance(t, loseAmmo):
                     opponent.Ammo -= 2
-                    targets.append(lowAmmo())
+                    targets.append(loseAmmo())
+                    self.score_system.reset_consecutive()
 
                 else:
-                    self.score += 10
+                    score = self.score_system.calculate_score(self.pos_x, self.pos_y, t.x, t.y)
+                    self.score += score
                     targets.append(Target())
                 return True
-                               
+        self.score_system.reset_consecutive()
+            
             
 class Target:
     def __init__(self):
         self.x = random.randint(0, 88) * 10
-        self.y = random.randint(0, 58) * 10
+        self.y = random.randint(10, 58) * 10
         self.score = 10
+        self.image = pygame.image.load("target.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (40, 40))
     
     def show(self, screen):
-        pygame.draw.rect(screen, (255,0,0), (self.x, self.y ,20, 20))
+        screen.blit(self.image, (self.x, self.y))
     
     
 
 class ExtraAmmo(Target):
     def __init__(self):
         super().__init__()
-    def show(self, screen):
-        pygame.draw.rect(screen, (50, 150, 0), (self.x -20, self.y -10, 50, 20))
-        pygame.draw.line(screen, (50, 200, 0), (self.x +20, self.y), (self.x +20, self.y), 7)       
+        self.image = pygame.image.load("ammo.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (40, 40))
 
-class lowAmmo(Target):
-    def __init__(self):
-        super().__init__()
     def show(self, screen):
-        pygame.draw.polygon(screen, (200, 0, 200), [
-            (self.x, self.y-20),
-            (self.x +20, self.y),
-            (self.x, self.y-20),
-            (self.x-20 , self.y)
-        ])
+        screen.blit(self.image, (self.x, self.y))
+
+class loseAmmo(Target):
+    def __init__(self):
+        self.image = pygame.image.load("decrease.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (40, 40))
+        super().__init__()
+        
+    def show(self, screen):
+        screen.blit(self.image, (self.x, self.y))
         
 class ExtraTime(Target):
     def __init__(self):    
         super().__init__()
+        self.image = pygame.image.load("clock.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (40, 40))
+
         
     def show(self, screen):
-        pygame.draw.circle(screen, (0, 45, 225), (self.x, self.y), 20)
-        pygame.draw.line(screen, WHITE, (self.x, self.y), (self.x+15 , self.y-15), 2)
-        pygame.draw.line(screen, WHITE, (self.x , self.y), (self.x , self.y+25), 2)
+        screen.blit(self.image, (self.x, self.y))
 
 
 
@@ -128,13 +158,16 @@ pygame.init()
 
 
 
-def draw_text(text, pos, font, color=BLACK):
+def draw_text(text, pos, font, color=WHITE):
     text_surface = font.render(text, True, color)
     screen.blit(text_surface, pos)
 
 def show_welcome_screen():
+    pygame.mixer.music.load("login.wav")
     draw_text("welcome to game!", (200, 100), font_l, RED)
     draw_text("Press the key to start the game ...", (350, 200), font_s, 'green')
+    pygame.mixer.music.play(-1)
+    
     pygame.display.flip()
     waiting = True
     while waiting:
@@ -201,6 +234,10 @@ if not player1_name or not player2_name:
     pygame.quit()
     sys.exit()
 
+pygame.mixer.music.stop()
+pygame.mixer.music.load("game.wav")
+pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.play(-1)
 
 
 
@@ -212,7 +249,7 @@ Target2 = Target()
 Target3 = Target()
 item1 = ExtraAmmo()
 item2 = ExtraTime()
-item3 = lowAmmo()
+item3 = loseAmmo()
 
 Targets = [Target1, Target2, Target3, item1, item2, item3]
 
@@ -287,32 +324,3 @@ while running:
                 player2.move_down()
 
             
-
-<<<<<<< HEAD
-    class SlowEnemy(Target):
-        def __init__(self):
-            super().__init__()
-            self.score = 5
-            self.slow = 5
-        def show(self, screen):
-            pygame.draw.polygon(screen, (200, 0, 200), [
-                (self.x, self.y-20),
-                (self.x +20, self.y),
-                (self.x, self.y-20),
-                (self.x-20 , self.y)
-            ])
-        
-    class ExtraTime(Target):
-        def __init__(self):
-            super().__init__()
-            self.time_bonus= 10
-            self.score = 0
-        
-        def show(self, screen):
-            pygame.draw.circle(screen, (0, 45, 225), (self.x, self.y), 20)
-            pygame.draw.line(screen, (self.x, self.y), (self.x+15 , self.y-15), 2)
-            pygame.draw.line(screen, (self.x , self.y), (self.x , self.y+25), 2)
-            
-=======
-
->>>>>>> ea3e7105e17aee6ad6a236e656765cc305dfa528
