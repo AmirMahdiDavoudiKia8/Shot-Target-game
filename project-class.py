@@ -47,7 +47,6 @@ class Pleyer:
                 if target.x - 20 < self.pos_x < target.x + 20 and target.y - 20 < self.pos_y < target.y + 20 :
                     targets.remove(t) 
                     targets.append(Target())
-     
 
             
 class Target:
@@ -57,7 +56,7 @@ class Target:
         self.score = 10
     
     def show(self, screen):
-        pygame.draw.rect(screen, (255,0,0), (self.x, self.y ,40,40))
+        pygame.draw.rect(screen, (255,0,0), (self.x, self.y ,20, 20))
     
     
 class Item:
@@ -94,3 +93,4 @@ class Item:
             pygame.draw.circle(screen, (0, 45, 225), (self.x, self.y), 20)
             pygame.draw.line(screen, (self.x, self.y), (self.x+15 , self.y-15), 2)
             pygame.draw.line(screen, (self.x , self.y), (self.x , self.y+25), 2)
+            
