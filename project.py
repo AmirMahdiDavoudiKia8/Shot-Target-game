@@ -1,13 +1,10 @@
 import pygame,sys
 from custom import *
-from classes import Player, Target, ExtraAmmo, ExtraTime, loseAmmo
+from classes import *
 
 pygame.init()
 pygame.mixer.init()
-shoot_sound = pygame.mixer.Sound("media/shoot.wav")
 
-background_image = pygame.image.load("media/photo1.jpg").convert()  # تصویر ثابت
-background_image = pygame.transform.scale(background_image, (GAME_WIDTH, GAME_HEIGHT))
 
 def draw_text(text, pos, font, color=WHITE):
     text_surface = font.render(text, True, color)
@@ -30,15 +27,34 @@ def show_welcome_screen():
             if event.type == pygame.KEYDOWN:
                 waiting = False
 
-    
+
+def show_winner_screen(winner):
+    screen.fill((0, 0, 0))
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("media/winer.mp3")
+    pygame.mixer.music.play()
+
+    if winner:
+        draw_text(f"Winner", (280, 130), font_ll, 'gold')
+        draw_text(f"{winer.name}", (350, 300), font_3, 'gold')
+    else:
+        draw_text("Draw!", (300, ), font_ll, 'gold')
+
+    pygame.display.flip()
+    pygame.time.delay(15000)
+
+
+
+
+
 def draw_header(player1, score1, time1, Ammo1, player2, score2, time2, Ammo2):
     pygame.draw.rect(screen, fever, (0, 0, WIDTH, HEADER_HEIGHT))  
     pygame.draw.line(screen, WHITE, (0, HEADER_HEIGHT), (WIDTH, HEADER_HEIGHT), 3)
     
-    draw_text(f"{player1}", (WIDTH - 300, 30), font_s1)
-    draw_text(f"score: {score1}  | time:  {time1}s  |  Ammo:  {Ammo1}", (WIDTH - 300, 50), font_s1)
-    draw_text(f"{player2}", (20, 30), font_s1)
-    draw_text(f"score: {score2}  | time:  {time2}s  |  Ammo:  {Ammo2}", (20, 50), font_s1)
+    draw_text(f"{player2}", (WIDTH - 300, 30), font_s1)
+    draw_text(f"score: {score2}  | time:  {time2}s  |  Ammo:  {Ammo2}", (WIDTH - 300, 50), font_s1)
+    draw_text(f"{player1}", (20, 30), font_s1)
+    draw_text(f"score: {score1}  | time:  {time1}s  |  Ammo:  {Ammo1}", (20, 50), font_s1)
 
 
 
@@ -198,6 +214,18 @@ while running:
             if event.key == pygame.K_KP5:
                 player2.move_down()
 
+
+
+
+winer = None
+
+if player1.score > player2.score :            
+    winer = player1
+
+elif player2.score > player1.score :
+    winer = player2
+
+show_winner_screen(winer)
+
 cap.release()
 pygame.quit()
-            

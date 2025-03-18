@@ -34,7 +34,7 @@ class ScoreSystem:
                      
 class Player:
 
-    def __init__(self, name, score=0, time=180, Ammo=20):
+    def __init__(self, name, score=0, time=120, Ammo=20):
         self.name = name
         self.score = score
         self.time = time
@@ -124,8 +124,8 @@ class Player:
             
 class Target:
     def __init__(self):
-        self.x = random.randint(0, 88) * 10
-        self.y = random.randint(10, 58) * 10
+        self.x = random.randint(0, 86) * 10
+        self.y = random.randint(12, 64) * 10
         self.score = 10
         self.image = pygame.image.load("media/target.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (40, 40))

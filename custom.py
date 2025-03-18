@@ -11,6 +11,11 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("SHOT - TARGET")
 
 
+shoot_sound = pygame.mixer.Sound("media/shoot.wav")
+
+background_image = pygame.image.load("media/photo1.jpg").convert()  # تصویر ثابت
+background_image = pygame.transform.scale(background_image, (GAME_WIDTH, GAME_HEIGHT))
+
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -24,6 +29,8 @@ font_s1 = pygame.font.Font(None, 22)
 font_l = pygame.font.Font(None, 80)
 font_1 = pygame.font.Font(None, 28)
 font_2 = pygame.font.Font(None, 32)
+font_3 = pygame.font.Font(None, 90)
+font_ll = pygame.font.Font(None, 180)
 
 
 cap = cv2.VideoCapture("media/background.mp4")
