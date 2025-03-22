@@ -65,9 +65,9 @@ def get_player_names():
     running = True
     while running:
         screen.blit(get_frame(), (0, 0))
-        draw_text("Player One, please enter your name:", (50, 50), font_2, WHITE)
+        draw_text("Player One, please enter your name:", (50, 50), font_2, BLACK)
         draw_text(player1, (50, 100), font, RED)
-        draw_text("Player Two, please enter your name:", (50, 250), font_2, WHITE)
+        draw_text("Player Two, please enter your name:", (50, 250), font_2, BLACK)
         draw_text(player2, (50, 300), font, RED)
         draw_text("Press Enter to confirm ...", (50, 550), font_s, 'green')
         pygame.display.flip()

@@ -1,7 +1,5 @@
-import random
 import pygame,sys
 import cv2
-import math
 pygame.init()
 
 GAME_WIDTH, GAME_HEIGHT = 900, 600
@@ -13,8 +11,7 @@ pygame.display.set_caption("SHOT - TARGET")
 
 shoot_sound = pygame.mixer.Sound("media/shoot.wav")
 
-background_image = pygame.image.load("media/photo1.jpg").convert()  # تصویر ثابت
-background_image = pygame.transform.scale(background_image, (GAME_WIDTH, GAME_HEIGHT))
+background_image = pygame.image.load("media/photo1.jpg").convert()
 
 
 WHITE = (255, 255, 255)
