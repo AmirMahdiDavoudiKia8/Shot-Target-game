@@ -31,14 +31,14 @@ def show_welcome_screen():
 def show_winner_screen(winner):
     screen.fill((0, 0, 0))
     pygame.mixer.music.stop()
-    pygame.mixer.music.load("media/winer.mp3")
+    pygame.mixer.music.load("media/winner.mp3")
     pygame.mixer.music.play()
 
     if winner:
         draw_text(f"Winner", (280, 130), font_ll, 'gold')
-        draw_text(f"{winer.name}", (350, 300), font_3, 'gold')
+        draw_text(f"{winner.name}", (350, 300), font_3, 'gold')
     else:
-        draw_text("Draw!", (300, ), font_ll, 'gold')
+        draw_text("Draw!", (300, 200), font_ll, 'gold')
 
     pygame.display.flip()
     pygame.time.delay(15000)
@@ -217,15 +217,15 @@ while running:
 
 
 
-winer = None
+winner = None
 
 if player1.score > player2.score :            
-    winer = player1
+    winner = player1
 
 elif player2.score > player1.score :
-    winer = player2
+    winner = player2
 
-show_winner_screen(winer)
+show_winner_screen(winner)
 
 cap.release()
 pygame.quit()
